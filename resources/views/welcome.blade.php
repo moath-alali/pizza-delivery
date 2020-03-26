@@ -7,10 +7,11 @@
         <title>Pizza delivery</title>
 
         <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
+        <link type="text/css" href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
 
         <!-- Styles -->
-        <link href="/css/app.css" rel="stylesheet">
+        <link type="text/css" href="/css/app.css" rel="stylesheet">
+        <link rel="icon" href="{{ URL::asset('/css/favicon.png') }}" type="image/x-icon"/>
     </head>
     <body>
         <div id="app"></div>
