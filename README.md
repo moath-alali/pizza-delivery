@@ -1,6 +1,6 @@
 #Stay at home pizza-delivery app
 In order to deploy this app to heroku, you need only to upload this repository to heroku folloing the standard deployment steps on heroku site.
-after the deployment finishes you need to generate the encryption keys for passport. one option to do so is by running this command heroku ps:exec -a your_app_name in the terminal then by running this command php artisan passport:keys, that will generate the keys. or you can generate the keys somewhere else and deploy them with the repository in somme secure way.
+after the deployment finishes you need to generate the encryption keys for passport. one option to do so is by adding this ("post-install-cmd": ["php artisan passport:install"]) to the scripts section in your composer.json file, that will generate the keys. or you can generate the keys somewhere else and deploy them with the repository in somme secure way.
 the next step is to config vars in the app settings on heroku, where the following vars need to be set:
 APP_DEBUG = true
 APP_ENV = production
