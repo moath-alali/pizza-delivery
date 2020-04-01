@@ -6,6 +6,7 @@ use App\Category;
 use App\Http\Controllers\Controller;
 use App\Item;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class ItemController extends Controller
 {
@@ -18,6 +19,23 @@ class ItemController extends Controller
     {
         try {
             $result = Item::all();
+            return $result;
+        } catch (\Throwable $th) {
+            $response = array('error' => 'Error connecting to database!!');
+            return $response;
+        }
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getMany(Request $request)
+    {
+        $ids = $request->ids;
+        try {
+            $result = Item::findMany($ids);
             return $result;
         } catch (\Throwable $th) {
             $response = array('error' => 'Error connecting to database!!');
@@ -43,22 +61,40 @@ class ItemController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|max:255',
-            'description' => 'string|nullable',
-            'image_path' => 'required',
-            'price' => 'required',
-            'available' => 'required|boolean',
-            'discount' => 'required',
-            'category_id' => 'required'
-        ]);
+        $name = $request->image_path;
+        $image = $request->image;
+        $image_path = preg_replace("/[^A-Za-z0-9]/", "", $name);
+        $nowTIME = Carbon::now();
+        if ($name == NULL) {
+            return response()->json("Error!");
+        } else {
+            $image_path = $nowTIME . '_' . $image_path;
+            $destinationPath = public_path('/storage/images') . '/' . $image_path;
+            if (file_put_contents($destinationPath, file_get_contents($image))) {
+            } else {
+                echo "Unable to save the file.";
+            }
+        }
+        try {
+            $request->validate([
+                'name' => 'required|max:255',
+                'description' => 'string|nullable',
+                'image_path' => 'required',
+                'price' => 'required',
+                'available' => 'required|boolean',
+                'discount' => 'required',
+                'category_id' => 'required'
+            ]);
+        } catch (\Throwable $error) {
+            return $error;
+        }
         try {
             $category = Category::find($request->category_id);
             if ($category != null) {
                 $item = new Item();
                 $item->name = $request->name;
                 $item->description = $request->description;
-                $item->image_path = $request->image_path;
+                $item->image_path = $image_path;
                 $item->price = $request->price;
                 $item->available = $request->available;
                 $item->discount = $request->discount;

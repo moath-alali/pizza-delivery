@@ -103,9 +103,11 @@ class OrderController extends Controller
                     $items_ids[$item->id] = ['quantity' => $el['quantity']];
                     $order->total += $el['quantity'] * ($item->price * (100 - $item->discount) / 100);
                 }
-                var_dump($items_ids);
                 $order->save();
                 $order->items()->attach($items_ids);
+                $order->items = $order->items;
+                $order->user = $order->user;
+                $order->status = $order->status;
                 return $order;
             } catch (\Throwable $th) {
                 $response = array('error' => 'Error connecting to database!!');

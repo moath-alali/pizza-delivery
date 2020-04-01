@@ -17,13 +17,14 @@ class AuthController extends Controller
             'password' => 'required|confirmed|max:255'
         ]);
 
+
         $validatedData['password'] = Hash::make($request->password);
 
         $user = User::create($validatedData);
 
         $accessToken = $user->createToken('authToken')->accessToken;
 
-        return response(['user' => $user, 'access_token' => $accessToken]);
+        return response(['user' => $user, 'token' => $accessToken]);
     }
 
     public function login(Request $request)
@@ -37,21 +38,27 @@ class AuthController extends Controller
             if (Hash::check($request->password, $user->password)) {
                 $token = $user->createToken('Laravel Password Grant Client')->accessToken;
                 $response = ['token' => $token, 'user' => $user];
-                return response($response, 200);
+                return $response;
             } else {
-                $response = "Password missmatch";
-                return response($response, 422);
+                $response = ['error' => 'Password missmatch'];
+                return $response;
             }
         } else {
-            $response = 'User does not exist';
-            return response($response, 422);
+            $response = ['error' => 'User does not exist'];
+            return $response;
         }
     }
 
-    public function logout (Request $request) {
-        $token = $request->user()->token();
-        $token->revoke();
-        $response = 'You have been succesfully logged out!';
-        return response($response, 200);
+    public function logout(Request $request)
+    {
+        try {
+            $token = $request->user()->token();
+            $token->revoke();
+            $response = ['success' => 'You have been succesfully logged out!'];
+        } catch (\Throwable $th) {
+            $response = ['error' => 'server unhandled error'];
+            return $response;
+        }
+        return $response;
     }
 }

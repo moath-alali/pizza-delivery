@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -45,12 +46,16 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show()
     {
         try {
-            $result = User::find($id);
+            $result = User::find(Auth::user()->id);
             if ($result != null) {
                 $result->orders = $result->orders;
+                for ($i = 0; $i < count($result->orders); $i++) {
+                    $result->orders[$i]->status = $result->orders[$i]->status;
+                    $result->orders[$i]->created_at = date("m.d.y", strtotime($result->orders[$i]->created_at));
+                }
                 $result->roles = $result->roles;
             }
             return $result;

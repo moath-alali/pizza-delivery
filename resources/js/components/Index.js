@@ -1,51 +1,29 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import Axios from 'axios';
-
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import Client from './Client/Index';
+import Admin from './Admin/Index';
 
 export default class Index extends Component {
-    constructor() {
-        super();
-        this.state = {
-            token: [],
-            user: []
-        };
+    constructor(props) {
+        super(props);
+
     }
-    componentDidMount() {
-        Axios.post('/api/login', { email: 'moath.alali@gmail.com', password: 'secretsecret' }).then(response => {
-            console.log(response);
-            this.setState({
-                token: response.data.token
-            });
-            localStorage.setItem('access_token', response.data.token);
-            Axios.get('/api/user', {
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-                }
-            }).then(response => {
-                console.log(response);
-                this.setState({
-                    user: response.data
-                });
-            });
-        });
-    }
+    
     render() {
         return (
-            <div className="container">
-                <div className="row justify-content-center">
-                    <div className="col-md-8">
-                        <div className="card">
-                            <div className="card-header">{this.state.token}</div>
-                            <div className="card-body">{JSON.stringify(this.state.user)}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <Switch>
+                <Route path="/admin/">
+                    <Admin />
+                </Route>
+                <Route exact path="/*">
+                    <Client />
+                </Route>
+            </Switch>
         );
     }
 }
 
 if (document.getElementById('app')) {
-    ReactDOM.render(<Index />, document.getElementById('app'));
+    ReactDOM.render(<Router><Index /></Router>, document.getElementById('app'));
 }

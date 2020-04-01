@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Category;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class CategoryController extends Controller
 {
@@ -42,6 +43,21 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
+        $name = $request->image_path;
+        $image = $request->image;
+        $image_path = preg_replace("/[^A-Za-z0-9]/", "", $name);
+        $nowTIME = Carbon::now();
+        if ($name == NULL) {
+            return response()->json("Error!");
+        } else {
+            $image_path = $nowTIME . '_' . $image_path;
+            $destinationPath = public_path('/storage/images') . '/' . $image_path;
+            if (file_put_contents($destinationPath, file_get_contents($image))) {
+            } else {
+                echo "Unable to save the file.";
+            }
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'string|nullable',
@@ -51,7 +67,7 @@ class CategoryController extends Controller
             $category = new Category();
             $category->name = $request->name;
             $category->description = $request->description;
-            $category->image_path = $request->image_path;
+            $category->image_path = $image_path;
             $category->save();
             return $category;
         } catch (\Throwable $th) {
