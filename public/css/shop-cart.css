@@ -152,7 +152,6 @@ tr.extracosts {
 }
 
 .remove {
-  /* http://findicons.com/icon/261449/trash_can?id=397422 */
   cursor: pointer;
   position: relative;
   right: 12px;
